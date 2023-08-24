@@ -1,25 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import "./App.css"
+
+import Expenses from "./component/Expenses/Expenses";
+import NewExpense from "./component/NewExpense/NewExpense";
+
+
+
+const Dummy_Expense = [];
+
+const App = ()=>{
+    
+    const [expense , setNewExpense] = useState(Dummy_Expense);
+
+
+    function fetchData(){
+        fetch("http://localhost:5000/listdata")
+        .then(response => {
+           response.json();
+        })
+        .then(data => {
+           console.log(data);
+           setNewExpense(data);
+        })
+    }
+
+
+    useEffect(()=>{
+        fetchData()
+    },[]);
+
+     
+
+   
+    
+    const frontData = (addingData)=>{
+            // const upDateExpense = [addingData, ...expense];
+            // setNewExpense(upDateExpense)
+
+            fetch("http://localhost:5000/list", {
+                method: "POST",
+                body: JSON.stringify(addingData),
+                headers:{'content-Type' : 'application/json'}
+            }).then(
+                response =>{
+                    fetchData();
+                }
+            )
+         }
+        
+    
+          
+    return (
+        <div>
+             <h1>where is your hometown</h1><br /><br />
+             <NewExpense onFormData={ frontData }/><br /><br />
+             <Expenses item={expense}/>
+            
+        </div>
+    );
 }
+
 
 export default App;
